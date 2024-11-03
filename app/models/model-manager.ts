@@ -12,7 +12,7 @@ export class ModelManager {
     private readonly cacheFolder: Folder;
     private readonly configFile: string;
     private modelConfigs: Map<string, ModelConfig>;
-    
+
     constructor() {
         this.cacheFolder = knownFolders.documents().getFolder('model-cache');
         this.configFile = path.join(this.cacheFolder.path, 'model-configs.json');
@@ -40,7 +40,7 @@ export class ModelManager {
         onProgress?: (progress: DownloadProgress) => void
     ): Promise<ModelConfig> {
         const modelDir = path.join(this.cacheFolder.path, this.sanitizeModelId(modelId));
-        
+
         if (this.modelConfigs.has(modelId)) {
             return this.modelConfigs.get(modelId);
         }
@@ -52,7 +52,7 @@ export class ModelManager {
 
             const modelInfo = await this.fetchModelInfo(modelId);
             const files = await this.downloadModelFiles(modelId, modelDir, format, onProgress);
-            
+
             const config: ModelConfig = {
                 id: modelId,
                 name: modelInfo.name,
@@ -170,15 +170,15 @@ export class ModelManager {
     ): Promise<ModelFile[]> {
         const files: ModelFile[] = [];
         const modelFiles = this.getModelFiles(format);
-        
+
         for (const filename of modelFiles) {
             const url = `https://huggingface.co/${modelId}/resolve/main/${filename}`;
             const filePath = path.join(modelDir, filename);
-            
+
             try {
                 await this.downloadFile(url, filePath, onProgress);
                 const fileStats = File.fromPath(filePath);
-                
+
                 files.push({
                     name: filename,
                     path: filePath,
@@ -188,7 +188,7 @@ export class ModelManager {
                 throw new ModelStorageError(`Failed to download ${filename}: ${error.message}`);
             }
         }
-        
+
         return files;
     }
 
