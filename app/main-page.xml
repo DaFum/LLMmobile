@@ -1,0 +1,132 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="navigatingTo">
+    <ActionBar title="ML Model Manager" />
+    
+    <ScrollView>
+        <StackLayout class="p-4">
+            <!-- Error Display -->
+            <Label text="{{ error }}" class="text-red-500 mb-2" 
+                   visibility="{{ error ? 'visible' : 'collapsed' }}" textWrap="true" />
+
+            <!-- Model Download Section -->
+            <Label text="Download New Model" class="text-xl font-bold mb-2" />
+            <TextField hint="Enter Model ID (e.g., gpt2-small)" text="{{ modelId }}" 
+                      class="mb-2 p-2 border rounded" />
+            
+            <Label text="Model Format" class="mb-1" />
+            <ListPicker items="{{ modelFormats }}" selectedIndex="{{ selectedFormatIndex }}" 
+                       class="mb-2" />
+
+            <Button text="Download Model" tap="{{ downloadModel }}" 
+                    class="bg-blue-500 text-white p-2 rounded" 
+                    isEnabled="{{ !isLoading }}" />
+
+            <!-- Download Progress -->
+            <StackLayout visibility="{{ isLoading ? 'visible' : 'collapsed' }}" class="mt-2">
+                <Progress value="{{ downloadProgress }}" maxValue="100" class="mb-2" />
+                <Label text="{{ downloadProgress }}%" class="text-center" />
+            </StackLayout>
+
+            <!-- Local Models Section -->
+            <Label text="Local Models" class="text-xl font-bold mt-4 mb-2" />
+            <ListView items="{{ localModels }}" class="mb-4" height="200">
+                <ListView.itemTemplate>
+                    <GridLayout columns="*, auto" class="p-2 border-b">
+                        <StackLayout col="0">
+                            <Label text="{{ name }}" class="font-bold" />
+                            <Label text="{{ format + ' - ' + $parent.formatSize(size) }}" class="text-sm text-gray-500" />
+                            <Label text="{{ 'Downloaded: ' + downloadDate }}" class="text-xs text-gray-400" />
+                        </StackLayout>
+                        <Button text="Delete" tap="{{ $parent.deleteModel }}" 
+                                class="bg-red-500 text-white p-1 rounded" col="1" />
+                    </GridLayout>
+                </ListView.itemTemplate>
+            </ListView>
+
+            <!-- Model Parameters -->
+            <Label text="Model Parameters" class="text-xl font-bold mt-4 mb-2" />
+            
+            <!-- Common Parameters -->
+            <Label text="Common Parameters" class="text-lg font-semibold mt-2 mb-2" />
+            
+            <Label text="Temperature: {{ parameters.temperature }}" class="mb-1" />
+            <Slider value="{{ parameters.temperature }}" minValue="0" maxValue="2" 
+                    class="mb-4" />
+
+            <Label text="Max Length: {{ parameters.maxLength }}" class="mb-1" />
+            <Slider value="{{ parameters.maxLength }}" minValue="1" maxValue="2048" 
+                    class="mb-4" />
+
+            <Label text="Top K: {{ parameters.topK }}" class="mb-1" />
+            <Slider value="{{ parameters.topK }}" minValue="1" maxValue="100" 
+                    class="mb-4" />
+
+            <Label text="Top P: {{ parameters.topP }}" class="mb-1" />
+            <Slider value="{{ parameters.topP }}" minValue="0" maxValue="1" 
+                    class="mb-4" />
+
+            <Label text="Repetition Penalty: {{ parameters.repetitionPenalty }}" class="mb-1" />
+            <Slider value="{{ parameters.repetitionPenalty }}" minValue="1" maxValue="2" 
+                    class="mb-4" />
+
+            <GridLayout columns="*, *" class="mb-4">
+                <Switch checked="{{ parameters.doSample }}" col="0" />
+                <Label text="Do Sample" col="1" />
+            </GridLayout>
+
+            <GridLayout columns="*, *" class="mb-4">
+                <Switch checked="{{ parameters.earlyStopping }}" col="0" />
+                <Label text="Early Stopping" col="1" />
+            </GridLayout>
+
+            <!-- Format Specific Parameters -->
+            <Label text="Format Specific Parameters" class="text-lg font-semibold mt-2 mb-2" />
+            
+            <StackLayout visibility="{{ showPyTorchParams ? 'visible' : 'collapsed' }}">
+                <Label text="PyTorch Parameters" class="font-semibold" />
+                <GridLayout columns="*, *" class="mb-2">
+                    <Switch checked="{{ parameters.pytorch.useHalfPrecision }}" col="0" />
+                    <Label text="Use Half Precision" col="1" />
+                </GridLayout>
+                <GridLayout columns="*, *" class="mb-2">
+                    <Switch checked="{{ parameters.pytorch.useFP16 }}" col="0" />
+                    <Label text="Use FP16" col="1" />
+                </GridLayout>
+            </StackLayout>
+
+            <StackLayout visibility="{{ showTensorFlowParams ? 'visible' : 'collapsed' }}">
+                <Label text="TensorFlow Parameters" class="font-semibold" />
+                <GridLayout columns="*, *" class="mb-2">
+                    <Switch checked="{{ parameters.tensorflow.useXLA }}" col="0" />
+                    <Label text="Use XLA" col="1" />
+                </GridLayout>
+                <GridLayout columns="*, *" class="mb-2">
+                    <Switch checked="{{ parameters.tensorflow.useGPU }}" col="0" />
+                    <Label text="Use GPU" col="1" />
+                </GridLayout>
+            </StackLayout>
+
+            <StackLayout visibility="{{ showONNXParams ? 'visible' : 'collapsed' }}">
+                <Label text="ONNX Parameters" class="font-semibold" />
+                <Label text="Optimization Level: {{ parameters.onnx.optimizationLevel }}" />
+                <Slider value="{{ parameters.onnx.optimizationLevel }}" minValue="0" maxValue="3" class="mb-2" />
+                <GridLayout columns="*, *" class="mb-2">
+                    <Switch checked="{{ parameters.onnx.graphOptimization }}" col="0" />
+                    <Label text="Graph Optimization" col="1" />
+                </GridLayout>
+            </StackLayout>
+
+            <StackLayout visibility="{{ showSafeTensorsParams ? 'visible' : 'collapsed' }}">
+                <Label text="SafeTensors Parameters" class="font-semibold" />
+                <ListPicker items="{{ precisionOptions }}" selectedIndex="{{ selectedPrecisionIndex }}" 
+                           class="mb-2" />
+                <GridLayout columns="*, *" class="mb-2">
+                    <Switch checked="{{ parameters.safetensors.useQuantization }}" col="0" />
+                    <Label text="Use Quantization" col="1" />
+                </GridLayout>
+            </StackLayout>
+
+            <Button text="Save Parameters" tap="{{ saveParameters }}" 
+                    class="bg-green-500 text-white p-2 rounded mt-4" />
+        </StackLayout>
+    </ScrollView>
+</Page>
